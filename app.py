@@ -20,7 +20,7 @@ login_manager.login_view = 'login'
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(int(user_id))
+    return db.session.get(User, int(user_id))
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -80,6 +80,8 @@ def register():
     if form.validate_on_submit():
         print("Form validated")
         hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+        # TODO - Zero-Knowledge Proof -> password must be made by the user and the server. 
+        # Both make an input to generate the password of the user.
         user = User(username=form.username.data, password=hashed_password)
         db.session.add(user)
         db.session.commit()
